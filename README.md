@@ -2,11 +2,11 @@
 
 ## Problem Statement
 
-I want to answer: "Is the software development industry becoming 'pay-to-win' for BSIT and CS students, and how does the inability to afford premium AI coding tools impact their job readiness compared to working professionals?"
+How does the financial barrier of premium AI coding tools impact the job readiness of Computer Studies students compared to working professionals?
 
 ## Audience
 
-This project is for BSIT students entering the job market and university curriculum directors who need to understand if paid AI tools are becoming a mandatory barrier to entry.
+This project is for Computer Studies students entering the job market and university curriculum directors who need to understand if paid AI tools are becoming a mandatory barrier to entry.
 
 ## KPI or Key Metric
 
@@ -14,7 +14,7 @@ The main metric I want to track is the **Premium AI Adoption Gap** (the differen
 
 ## Likely Data Source
 
-I will explore the Stack Overflow Annual Developer Survey (https://survey.stackoverflow.co/).
+I will explore the Stack Overflow Annual Developer Survey 2025 dataset (https://www.kaggle.com/datasets/aliaslam25/stack-overflow-developer-survey-2025). This dataset will be downloaded and used as a **static CSV file**, as the survey results are released annually rather than updated live.
 
 ## Possible Final Dashboard
 
