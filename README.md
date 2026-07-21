@@ -33,9 +33,9 @@ The dashboard should help the audience quickly see the gap in paid AI tool usage
 
 ### Fallback Source
 
-- **Name:** Global AI Tool Adoption Across Industries
-- **URL:** https://www.kaggle.com/datasets/tfisthis/global-ai-tool-adoption-across-industries
-- **Format:** CSV
-- **Coverage:** Global AI tool adoption rates spanning 2023–2025, categorized by age group.
-- **Why it could still work:** If the primary data fails, this dataset still allows us to track the adoption rates of specific paid AI tools across different age groups (acting as a proxy for students).
-- **Known limitations:** The dataset is aggregated globally rather than raw, individual survey submissions.
+- **Name:** GitHub Innovation Graph - Developer Metrics
+- **URL:** https://github.com/github/innovationgraph
+- **Format:** CSV / API
+- **Coverage:** Official quarterly metrics on developer activity, push events, and repository data spanning multiple economies.
+- **Why it could still work:** If the primary data fails, this official repository from GitHub provides concrete, non-Kaggle data on developer activity that we can use as a proxy for engagement and tool adoption.
+- **Known limitations:** Aggregated by economy/region rather than granular, individual student vs. professional survey responses.
