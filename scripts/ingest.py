@@ -4,19 +4,24 @@ Kaggle API Ingestion Logic for Stack Overflow Dataset
 """
 
 import os
+from dotenv import load_dotenv
 import time
 import requests
 from pathlib import Path
 from datetime import datetime
 
+# Load the environment variables from the .env file in the root folder
+load_dotenv()
+
 # Bootcamp directory setup
 RAW_DATA_DIR = Path(__file__).parent.parent / "data" / "raw"
 
 def get_kaggle_token():
-    """Reads the Kaggle API Bearer token."""
-    token_path = Path.home() / ".kaggle" / "access_token"
-    with open(token_path, 'r') as f:
-        return f.read().strip()
+    """Securely reads the Kaggle API Bearer token from the .env file."""
+    token = os.getenv("KAGGLE_BEARER_TOKEN")
+    if not token:
+        raise ValueError("Missing Kaggle Token! Please set KAGGLE_BEARER_TOKEN in your .env file.")
+    return token.strip()
 
 def ingest():
     """Hits the Kaggle API with retries, timestamps, and logging."""
