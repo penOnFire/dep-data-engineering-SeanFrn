@@ -1,5 +1,5 @@
 """
-Phase 2 — Data Ingestion (Week 6 Hardened Version)
+Phase 2 — Data Ingestion (GitHub Actions CI/CD Version)
 Kaggle API Ingestion Logic for Stack Overflow Dataset
 """
 
@@ -10,25 +10,21 @@ import requests
 from pathlib import Path
 from datetime import datetime
 
-# Load the environment variables from the .env file in the root folder
 load_dotenv()
 
-# Bootcamp directory setup
 RAW_DATA_DIR = Path(__file__).parent.parent / "data" / "raw"
 
 def get_kaggle_token():
-    """Securely reads the Kaggle API Bearer token from the .env file."""
+    """Securely reads the Kaggle API Bearer token from the environment."""
     token = os.getenv("KAGGLE_BEARER_TOKEN")
     if not token:
-        raise ValueError("Missing Kaggle Token! Please set KAGGLE_BEARER_TOKEN in your .env file.")
+        raise ValueError("Missing Kaggle Token! Please set KAGGLE_BEARER_TOKEN in your environment secrets.")
     return token.strip()
 
 def ingest():
-    """Hits the Kaggle API with retries, timestamps, and logging."""
     token = get_kaggle_token()
     headers = {"Authorization": f"Bearer {token}"}
     
-    # 1. Search Kaggle to get the official dataset reference
     search_term = "aliaslam25/stack-overflow-developer-survey-2025"
     search_url = "https://www.kaggle.com/api/v1/datasets/list"
     
@@ -40,12 +36,10 @@ def ingest():
     download_url = f"https://www.kaggle.com/api/v1/datasets/download/{dataset_ref}"
     print(f"Found dataset. Target URL: {download_url}")
 
-    # 2. Setup Timestamping (Week 6 Requirement)
     today_str = datetime.now().strftime("%Y-%m-%d")
     output_filename = f"stack-overflow-2025-raw_{today_str}.zip"
     output_file = RAW_DATA_DIR / output_filename
     
-    # 3. Download with Retries (Week 6 Requirement)
     max_retries = 3
     for attempt in range(1, max_retries + 1):
         try:
@@ -58,7 +52,7 @@ def ingest():
                     f.write(chunk)
                     
             print(f"Success! Saved raw extract to {output_file}")
-            break # Exit the retry loop on success
+            break 
             
         except requests.exceptions.RequestException as e:
             print(f"Attempt {attempt} failed: {e}")
@@ -67,7 +61,6 @@ def ingest():
             print("Retrying in 3 seconds...")
             time.sleep(3)
 
-    # 4. Source Logging (Week 6 Requirement)
     log_file = RAW_DATA_DIR / "ingestion_log.txt"
     with open(log_file, "a") as f:
         f.write(f"[{datetime.now().isoformat()}] Downloaded {output_filename} from {download_url}\n")

@@ -4,80 +4,140 @@
 
 How does the financial barrier of premium AI coding tools impact the job readiness of Computer Studies students compared to working professionals?
 
-## Audience
+## Target Audience
 
-This project is for Computer Studies students entering the job market and university curriculum directors who need to understand if paid AI tools are becoming a mandatory barrier to entry.
+This project is intended for:
 
-## KPI or Key Metric
+- Computer Studies students preparing to enter the workforce
+- University curriculum directors and academic administrators evaluating whether access to premium AI coding tools should be provided to students
 
-The main metric I want to track is the **Premium AI Adoption Gap** (the difference in usage rates of paid AI tools between students and employed developers).
+## Key Performance Indicator (KPI)
 
-## Likely Data Source
+The primary KPI is the **Premium AI Adoption Gap**, defined as the difference in the adoption rate of premium AI coding tools between Computer Studies students and employed software developers.
 
-I will explore the [Stack Overflow Annual Developer Survey 2025 dataset](https://www.kaggle.com/datasets/aliaslam25/stack-overflow-developer-survey-2025). This dataset will be downloaded and used as a **static CSV file**, as the survey results are released annually rather than updated live.
+## Data Source
 
-## Possible Final Dashboard
+This project uses the **Stack Overflow Annual Developer Survey 2025** dataset as its primary source. The survey is distributed as a static CSV dataset, making it suitable for reproducible analysis without requiring live API requests.
 
-The dashboard should help the audience quickly see the gap in paid AI tool usage between students and professionals, allowing educators to decide if university-sponsored AI subscriptions are necessary to keep students competitive.
+## Dashboard Goal
 
-## Data Source Notes
+The dashboard will visualize differences in premium AI tool adoption between students and professional developers, highlighting whether financial barriers may affect students' job readiness. The insights can help universities determine whether institution-sponsored AI subscriptions are necessary to keep students competitive.
 
-### Primary Source
+---
+
+# Data Source Notes
+
+## Primary Source
 
 - **Name:** Stack Overflow Developer Survey (2025 Data)
 - **URL:** https://www.kaggle.com/datasets/aliaslam25/stack-overflow-developer-survey-2025
 - **Format:** CSV
-- **Ingestion Strategy:** I will write a Python script (`scripts/ingest.py`) that uses the official `kaggle` Python API library to programmatically authenticate, download, and extract the dataset directly into my local `data/raw/` folder.
-- **Coverage:** 49,123 rows × 170 columns covering global tech tool usage.
-- **Why it fits the problem:** We will filter the `MainBranch` column to isolate students and cross-reference this with the `AIToolCurrentlyUsing` column to track adoption of premium tools. We will also analyze the `TechPurchase` metrics to see how often "Prohibitive pricing" is cited as a blocker.
-- **Known limitations:** Data is self-reported. We must infer financial barriers from employment status and pricing sentiment.
-
-### Fallback Source
-
-- **Name:** GitHub Innovation Graph – Developer Metrics
-- **URL:** https://github.com/github/innovationgraph
-- **Format:** CSV / API
-- **Ingestion Strategy:** I will use a Python script utilizing the `requests` library to fetch the quarterly metrics via the GitHub REST API or programmatically download the raw CSVs into the `data/raw/` folder.
-- **Coverage:** Official quarterly metrics on developer activity, push events, and repository data spanning multiple economies.
-- **Why it could still work:** If the primary data fails, this official repository from GitHub provides concrete, non-Kaggle data on developer activity that we can use as a proxy for engagement and tool adoption.
-- **Known limitations:** Aggregated by economy/region rather than granular, individual student vs. professional survey responses.
+- **Ingestion Strategy:** A Python script (`scripts/ingest.py`) uses the official Kaggle API to authenticate, download, and extract the dataset into the `data/raw/` directory.
+- **Coverage:** Approximately 49,123 responses across 170 survey variables covering developer demographics, AI usage, employment, and development tools.
+- **Why it fits the problem:**
+  - Filter the `MainBranch` column to distinguish students from professional developers.
+  - Analyze the `AIToolCurrentlyUsing` column to measure premium AI tool adoption.
+  - Examine the `TechPurchase` or related purchasing variables to identify whether pricing influences AI tool adoption.
+- **Known Limitations:**
+  - Survey responses are self-reported.
+  - Financial barriers must be inferred from survey responses rather than measured directly.
+  - Results represent survey participants and may not generalize to all developers.
 
 ---
 
-## Data Ingestion Instructions
+## Fallback Source
 
-Follow these steps to reproduce the automated data extraction from the Kaggle API.
+- **Name:** GitHub Innovation Graph – Developer Metrics
+- **URL:** https://github.com/github/innovationgraph
+- **Format:** CSV
+- **Ingestion Strategy:** A Python script uses the `requests` library to download the latest public CSV datasets directly from the GitHub Innovation Graph repository.
+- **Coverage:** Quarterly developer activity metrics across multiple economies.
+- **Why it could still work:** If the Stack Overflow dataset becomes unavailable, GitHub Innovation Graph provides publicly accessible developer activity data that can serve as supporting context for developer engagement trends.
+- **Known Limitations:**
+  - Data is aggregated by country or region.
+  - Does not distinguish students from professionals.
+  - Does not directly measure premium AI tool usage.
 
-### Prerequisites
+---
 
-1. **Python 3.8+** must be installed on your system.
-2. **Kaggle API credentials:** Create a token from your Kaggle account under **Account → API → Create New API Token**. This downloads a `kaggle.json` file containing your username and key. Save it to `~/.kaggle/kaggle.json` (`C:\Users\<you>\.kaggle\kaggle.json` on Windows), or set the `KAGGLE_USERNAME` and `KAGGLE_KEY` environment variables instead.
+# Data Ingestion (CI/CD Pipeline)
 
-### Step-by-Step Execution
+To provide a frictionless review experience, the data ingestion process is automated using **GitHub Actions**. Reviewers do not need to install Python or configure Kaggle credentials locally.
 
-**1. Install dependencies**
+## Running the Pipeline (Reviewers)
 
-Open your terminal at the root of the project repository and install the required Python libraries using the `requirements.txt` file:
+1. Open the **Actions** tab in this GitHub repository.
+2. Select **Automated Kaggle Ingestion Pipeline** from the list of workflows.
+3. Click **Run workflow**, then select the green **Run workflow** button.
+4. GitHub Actions will:
+   - Launch a runner
+   - Securely load the stored Kaggle credentials from GitHub Secrets
+   - Execute `scripts/ingest.py`
+5. After the workflow completes successfully, open the workflow run and download the generated dataset from the **Artifacts** section.
+
+---
+
+# Local Execution (Developers)
+
+Developers who wish to run the ingestion pipeline locally can follow these steps.
+
+## Prerequisites
+
+- Python 3.8 or later
+- A Kaggle account
+- Kaggle API credentials
+
+## 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**2. Run the ingestion script**
+## 2. Configure Kaggle Credentials
 
-Execute the Python script located in the `scripts` folder:
+Create a `.env` file in the project root:
+
+```env
+KAGGLE_USERNAME=your_username
+KAGGLE_KEY=your_api_key
+```
+
+Alternatively, place the official `kaggle.json` file inside:
+
+```
+~/.kaggle/
+```
+
+and ensure the file has the correct permissions.
+
+## 3. Run the Ingestion Script
 
 ```bash
 python scripts/ingest.py
 ```
 
-**3. Expected output**
+---
 
-The data will land in the `data/raw/` folder with a filename that names the source and pull date. If successful, the script will create two files:
+# Expected Output
 
-- `stack-overflow-2025-raw_<YYYY-MM-DD>.zip` — the untouched, raw dataset downloaded directly from Kaggle.
-- `ingestion_log.txt` — a log file recording the exact timestamp and source URL of the download.
+After successful execution, the following files will be generated inside the `data/raw/` directory:
 
-## Data Dictionary & ERD
+```
+stack-overflow-2025-raw_<YYYY-MM-DD>.zip
+ingestion_log.txt
+```
 
-Because this extraction pulls a single flattened CSV file, the architecture relies on one main entity. The full Entity Relationship Diagram (ERD) and field-by-field data dictionary live next to the raw data itself, in [`data/raw/DATA_DICTIONARY.md`](data/raw/DATA_DICTIONARY.md).
+### Output Files
+
+**`stack-overflow-2025-raw_<YYYY-MM-DD>.zip`**
+
+The original dataset downloaded directly from Kaggle.
+
+**`ingestion_log.txt`**
+
+A log containing:
+
+- Download timestamp
+- Dataset source
+- Download status
+- Output filename
