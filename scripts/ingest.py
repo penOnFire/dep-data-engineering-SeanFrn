@@ -1,50 +1,37 @@
 """
-Phase 2 — Data Ingestion (GitHub Actions CI/CD Version)
-Kaggle API Ingestion Logic for Stack Overflow Dataset
+Phase 2 — Data Ingestion (Frictionless Public Version)
+Official Stack Overflow CDN Ingestion Logic
 """
 
-import os
-from dotenv import load_dotenv
 import time
 import requests
 from pathlib import Path
 from datetime import datetime
 
-load_dotenv()
-
+# Bootcamp directory setup
 RAW_DATA_DIR = Path(__file__).parent.parent / "data" / "raw"
 
-def get_kaggle_token():
-    """Securely reads the Kaggle API Bearer token from the environment."""
-    token = os.getenv("KAGGLE_BEARER_TOKEN")
-    if not token:
-        raise ValueError("Missing Kaggle Token! Please set KAGGLE_BEARER_TOKEN in your environment secrets.")
-    return token.strip()
-
 def ingest():
-    token = get_kaggle_token()
-    headers = {"Authorization": f"Bearer {token}"}
+    """Hits the official Stack Overflow public CDN with retries, timestamps, and logging."""
     
-    search_term = "aliaslam25/stack-overflow-developer-survey-2025"
-    search_url = "https://www.kaggle.com/api/v1/datasets/list"
+    # 1. Target URL (100% Public, NO API TOKEN REQUIRED)
+    # Direct endpoint to the Stack Overflow production CDN for the raw survey data
+    download_url = "https://cdn.stackoverflow.co/files/jo7n4k8s/production/49915bfd46d0902c3564fd9a06b509d08a20488c.zip"
     
-    print(f"Searching Kaggle API for: '{search_term}'...")
-    search_response = requests.get(search_url, params={"search": search_term}, headers=headers, timeout=30)
-    search_response.raise_for_status() 
-    
-    dataset_ref = search_response.json()[0]['ref']
-    download_url = f"https://www.kaggle.com/api/v1/datasets/download/{dataset_ref}"
-    print(f"Found dataset. Target URL: {download_url}")
+    print(f"Targeting public Stack Overflow CDN at: {download_url}")
 
+    # 2. Setup Timestamping (Week 6 Requirement)
     today_str = datetime.now().strftime("%Y-%m-%d")
-    output_filename = f"stack-overflow-2025-raw_{today_str}.zip"
+    output_filename = f"stack-overflow-raw_{today_str}.zip"
     output_file = RAW_DATA_DIR / output_filename
     
+    # 3. Download with Retries (Week 6 Requirement)
     max_retries = 3
     for attempt in range(1, max_retries + 1):
         try:
             print(f"Download attempt {attempt}/{max_retries}...")
-            download_response = requests.get(download_url, headers=headers, timeout=60, stream=True)
+            # No headers needed, purely public GET request
+            download_response = requests.get(download_url, timeout=60, stream=True)
             download_response.raise_for_status()
             
             with open(output_file, 'wb') as f:
@@ -52,7 +39,7 @@ def ingest():
                     f.write(chunk)
                     
             print(f"Success! Saved raw extract to {output_file}")
-            break 
+            break # Exit the retry loop on success
             
         except requests.exceptions.RequestException as e:
             print(f"Attempt {attempt} failed: {e}")
@@ -61,6 +48,7 @@ def ingest():
             print("Retrying in 3 seconds...")
             time.sleep(3)
 
+    # 4. Source Logging (Week 6 Requirement)
     log_file = RAW_DATA_DIR / "ingestion_log.txt"
     with open(log_file, "a") as f:
         f.write(f"[{datetime.now().isoformat()}] Downloaded {output_filename} from {download_url}\n")

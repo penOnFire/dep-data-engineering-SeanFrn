@@ -1,10 +1,12 @@
 .DS_Store
 __pycache__/
 *.pyc
-.env
 venv
 
 reference-docs/
+data/raw/
+*.zip
+*.csv
 AGENTS.md
 DESIGN.md
 CONTEXT.md

@@ -2,18 +2,18 @@
 
 ## Problem Statement
 
-How does the financial barrier of premium AI coding tools impact the job readiness of Computer Studies students compared to working professionals?
+How does AI tool adoption differ between Computer Studies students and professional developers, and what insights can this provide about potential accessibility barriers to premium AI coding tools?
 
 ## Target Audience
 
 This project is intended for:
 
-- Computer Studies students preparing to enter the workforce
-- University curriculum directors and academic administrators evaluating whether access to premium AI coding tools should be provided to students
+- Computer Studies students preparing to enter the workforce.
+- University curriculum directors and academic administrators evaluating whether access to AI coding tools should be provided to students.
 
 ## Key Performance Indicator (KPI)
 
-The primary KPI is the **Premium AI Adoption Gap**, defined as the difference in the adoption rate of premium AI coding tools between Computer Studies students and employed software developers.
+The primary KPI is the **AI Tool Adoption Gap**, defined as the difference in AI coding tool adoption between Computer Studies students and professional developers.
 
 ## Data Source
 
@@ -21,7 +21,7 @@ This project uses the **Stack Overflow Annual Developer Survey 2025** dataset as
 
 ## Dashboard Goal
 
-The dashboard will visualize differences in premium AI tool adoption between students and professional developers, highlighting whether financial barriers may affect students' job readiness. The insights can help universities determine whether institution-sponsored AI subscriptions are necessary to keep students competitive.
+The dashboard will compare AI tool adoption between students and professional developers. The results will help identify whether significant differences exist in AI tool usage, providing evidence that may inform discussions about accessibility to modern AI development tools in higher education.
 
 ---
 
@@ -29,19 +29,19 @@ The dashboard will visualize differences in premium AI tool adoption between stu
 
 ## Primary Source
 
-- **Name:** Stack Overflow Developer Survey (2025 Data)
-- **URL:** https://www.kaggle.com/datasets/aliaslam25/stack-overflow-developer-survey-2025
-- **Format:** CSV
-- **Ingestion Strategy:** A Python script (`scripts/ingest.py`) uses the official Kaggle API to authenticate, download, and extract the dataset into the `data/raw/` directory.
-- **Coverage:** Approximately 49,123 responses across 170 survey variables covering developer demographics, AI usage, employment, and development tools.
+- **Name:** Stack Overflow Developer Survey (Official Public Release)
+- **URL:** https://cdn.stackoverflow.co/files/jo7n4k8s/production/49915bfd46d0902c3564fd9a06b509d08a20488c.zip
+- **Format:** CSV (downloaded as a ZIP archive)
+- **Ingestion Strategy:** A Python script (`scripts/ingest.py`) uses the `requests` library to download the dataset directly from Stack Overflow's official CDN into the `data/raw/` directory. No authentication or API key is required.
+- **Coverage:** Approximately 49,000 survey responses across roughly 170 variables covering developer demographics, employment, AI usage, and development practices.
 - **Why it fits the problem:**
-  - Filter the `MainBranch` column to distinguish students from professional developers.
-  - Analyze the `AIToolCurrentlyUsing` column to measure premium AI tool adoption.
-  - Examine the `TechPurchase` or related purchasing variables to identify whether pricing influences AI tool adoption.
+  - Use the `MainBranch` column to distinguish students from professional developers.
+  - Analyze the `AITool` column to identify AI coding tools used by respondents.
+  - Compare AI tool adoption rates between the two groups.
 - **Known Limitations:**
   - Survey responses are self-reported.
-  - Financial barriers must be inferred from survey responses rather than measured directly.
-  - Results represent survey participants and may not generalize to all developers.
+  - The survey does not directly measure subscription costs or financial barriers.
+  - Differences in adoption should be interpreted as indicators of accessibility rather than direct evidence of affordability.
 
 ---
 
@@ -50,94 +50,55 @@ The dashboard will visualize differences in premium AI tool adoption between stu
 - **Name:** GitHub Innovation Graph – Developer Metrics
 - **URL:** https://github.com/github/innovationgraph
 - **Format:** CSV
-- **Ingestion Strategy:** A Python script uses the `requests` library to download the latest public CSV datasets directly from the GitHub Innovation Graph repository.
+- **Ingestion Strategy:** A Python script downloads publicly available CSV files using the `requests` library.
 - **Coverage:** Quarterly developer activity metrics across multiple economies.
-- **Why it could still work:** If the Stack Overflow dataset becomes unavailable, GitHub Innovation Graph provides publicly accessible developer activity data that can serve as supporting context for developer engagement trends.
+- **Why it could still work:** Provides contextual developer activity trends if the primary survey becomes unavailable.
 - **Known Limitations:**
-  - Data is aggregated by country or region.
+  - Aggregated by country or region.
   - Does not distinguish students from professionals.
-  - Does not directly measure premium AI tool usage.
+  - Does not measure AI tool adoption.
 
 ---
 
-# Data Ingestion (CI/CD Pipeline)
+# Data Ingestion Instructions
 
-To provide a frictionless review experience, the data ingestion process is automated using **GitHub Actions**. Reviewers do not need to install Python or configure Kaggle credentials locally.
-
-## Running the Pipeline (Reviewers)
-
-1. Open the **Actions** tab in this GitHub repository.
-2. Select **Automated Kaggle Ingestion Pipeline** from the list of workflows.
-3. Click **Run workflow**, then select the green **Run workflow** button.
-4. GitHub Actions will:
-   - Launch a runner
-   - Securely load the stored Kaggle credentials from GitHub Secrets
-   - Execute `scripts/ingest.py`
-5. After the workflow completes successfully, open the workflow run and download the generated dataset from the **Artifacts** section.
-
----
-
-# Local Execution (Developers)
-
-Developers who wish to run the ingestion pipeline locally can follow these steps.
+The ingestion pipeline downloads the dataset directly from Stack Overflow's public CDN. No authentication or API configuration is required.
 
 ## Prerequisites
 
 - Python 3.8 or later
-- A Kaggle account
-- Kaggle API credentials
 
-## 1. Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 2. Configure Kaggle Credentials
-
-Create a `.env` file in the project root:
-
-```env
-KAGGLE_USERNAME=your_username
-KAGGLE_KEY=your_api_key
-```
-
-Alternatively, place the official `kaggle.json` file inside:
-
-```
-~/.kaggle/
-```
-
-and ensure the file has the correct permissions.
-
-## 3. Run the Ingestion Script
+## Run the Ingestion Script
 
 ```bash
 python scripts/ingest.py
 ```
 
----
-
-# Expected Output
-
-After successful execution, the following files will be generated inside the `data/raw/` directory:
+## Expected Output
 
 ```
-stack-overflow-2025-raw_<YYYY-MM-DD>.zip
-ingestion_log.txt
+data/raw/
+├── stack-overflow-raw_<YYYY-MM-DD>.zip
+└── ingestion_log.txt
 ```
 
 ### Output Files
 
-**`stack-overflow-2025-raw_<YYYY-MM-DD>.zip`**
+**stack-overflow-raw\_<YYYY-MM-DD>.zip**
 
-The original dataset downloaded directly from Kaggle.
+The original Stack Overflow Developer Survey dataset downloaded directly from the official CDN.
 
-**`ingestion_log.txt`**
+**ingestion_log.txt**
 
-A log containing:
+Contains:
 
 - Download timestamp
-- Dataset source
+- Source URL
 - Download status
 - Output filename
