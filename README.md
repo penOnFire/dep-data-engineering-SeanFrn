@@ -80,31 +80,4 @@ The data will land in the `data/raw/` folder with a filename that names the sour
 
 ## Data Dictionary & ERD
 
-Because this extraction pulls a single flattened CSV file, the architecture relies on one main entity. Below is the Entity Relationship Diagram (ERD) defining the schema for the relevant fields used in our pipeline, followed by the detailed data dictionary.
-
-### Entity Relationship Diagram (ERD)
-
-```mermaid
-erDiagram
-    SURVEY_RESPONSES {
-        int ResponseId PK "Unique anonymous identifier"
-        string MainBranch "Professional vs Student"
-        string Employment "Current employment status"
-        string EdLevel "Highest formal education"
-        string AISelect "Current AI usage status"
-        string AIToolCurrentlyUsing "List of specific AI tools"
-        string TechPurchase "Purchasing blockers"
-    }
-```
-
-### Data Dictionary
-
-| Field                  | Unit        | Type    | Description                                                                                                                                  |
-| ---------------------- | ----------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ResponseId`           | Unitless    | INTEGER | Primary key. The unique anonymous identifier assigned to each survey respondent.                                                             |
-| `MainBranch`           | Categorical | STRING  | Identifies whether the respondent is a professional developer, a student/learner, or coding as a hobby.                                      |
-| `Employment`           | Categorical | STRING  | Current employment status (e.g., Employed full-time, Student).                                                                               |
-| `EdLevel`              | Categorical | STRING  | The highest level of formal education the respondent has completed.                                                                          |
-| `AISelect`             | Categorical | STRING  | Indicates whether the respondent currently uses AI tools in their development process (Yes/No/Plan to).                                      |
-| `AIToolCurrentlyUsing` | List        | STRING  | Semicolon-separated list of the specific AI developer tools the respondent currently uses (e.g., GitHub Copilot; ChatGPT; Claude).           |
-| `TechPurchase`         | Categorical | STRING  | Metrics detailing organizational or personal tech purchasing decisions. Used to analyze how often pricing is cited as a prohibitive blocker. |
+Because this extraction pulls a single flattened CSV file, the architecture relies on one main entity. The full Entity Relationship Diagram (ERD) and field-by-field data dictionary live next to the raw data itself, in [`data/raw/DATA_DICTIONARY.md`](data/raw/DATA_DICTIONARY.md).
